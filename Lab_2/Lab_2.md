@@ -1,27 +1,24 @@
 ---
 title: "Lab_2"
 author: "den"
-date: "`r Sys.Date()`"
-output: html_document
-  
+date: "2023-06-06"
+output:
+  pdf_document: default
+  html_document: default
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(arrow)
-library(dplyr)
-library(stringr)
-library(cluster)
-```
+
 
 ## Импортируем данные
-```{r}
+
+```r
 big <- arrow::read_csv_arrow("D:\\Документы\\gowiththeflow_20190826.csv",schema=schema(timestamp=int64(),src=utf8(),dst=utf8(),port=int32(),bytes=int32()))
 ```
 # Задание 2
 Другой атакующий установил автоматическую задачу в системном планировщике cron для экспорта
 содержимого внутренней wiki системы. Эта система генерирует большое количество траффика в нерабочие часы, больше чем остальные хосты. Определите IP этой системы. Известно, что ее IP адрес отличается от нарушителя из предыдущей задачи.
-```{r}
+
+```r
 ff<-filter(big, str_detect(src,"^((12|13|14)\\.)"),
          str_detect(dst,"^((12|13|14)\\.)",negate=TRUE))
 
@@ -44,5 +41,11 @@ filter(ff,(hour < start_time | hour > end_time)&str_detect(src,"13.37.84.125",ne
   summarise(bytes=sum(bytes))%>%
   slice_max(bytes)%>%
   select(src)
+```
 
+```
+## # A tibble: 1 x 1
+##   src        
+##   <chr>      
+## 1 13.48.72.30
 ```
